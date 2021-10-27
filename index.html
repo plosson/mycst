@@ -139,7 +139,6 @@
 
                 },
                 "init": function () {
-                    alert(location.hash);
                     const url = dgc.parseUrl(window.location.href);
                     if (url.query.p) {
                         this.initPass(dgc.decode64(url.query.p));
