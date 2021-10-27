@@ -42,14 +42,6 @@ module.exports = {
             filename: 'index.html',
             template: 'index.html'
         }),
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html'
-        }),
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: 'index.html'
-        }),
     ],
     resolve: {
         extensions: ['*', '.js'],
