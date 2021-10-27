@@ -114,7 +114,7 @@
                     });
                 },
                 "showPass": function (data) {
-                    window.location.href = "?p=" + dgc.encode64(data) + '#qr';
+                    window.location.href = "?" + dgc.splitQS(dgc.encode64(data),"p") + '#qr';
                 },
                 "formatDate": function (date, format) {
                     return dgc.formatDate(date, format);
@@ -162,8 +162,9 @@
                 },
                 "init": function () {
                     const url = dgc.parseUrl(window.location.href);
-                    if (url.query.p) {
-                        this.initPass(dgc.decode64(url.query.p));
+                    if (url.query.p0) {
+                        const merged = dgc.mergeQS(url.query,"p");
+                        this.initPass(dgc.decode64(merged));
                         if (this.page === ''){
                             this.changePage('#qr');
                         }
