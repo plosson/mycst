@@ -14,6 +14,30 @@ function decode64(value) {
     return Base64.decode(value);
 }
 
+function splitQS(data, param) {
+    const parts = data.match(/.{1,100}/g);
+    const qs = [];
+    for (let i = 0; i < parts.length; i++) {
+        qs.push(param + i + "=" + parts[i]);
+    }
+    return qs.join('&');
+}
+
+function mergeQS(params, param) {
+    const parts = [];
+    for (let i = 0; i < Object.keys(params).length; i++) {
+        const key = param + i;
+        if (params[key])
+        {
+            parts.push(params[key]);
+        }
+        else{
+            break;
+        }
+    }
+    return parts.join();
+}
+
 function encode64(value) {
     return Base64.encodeURI(value);
 }
@@ -53,7 +77,7 @@ function capitalizeFirstLetter(string) {
 }
 
 
-export {decode64, encode64, parseUrl, decodeDGC}
+export {splitQS, mergeQS, decode64, encode64, parseUrl, decodeDGC}
 
 
 
