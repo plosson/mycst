@@ -14,7 +14,6 @@ Here is for instance the `myCST
 of EM found on `Google
 <https://lmgtfy.app/?q=QR+code+macron&t=i>`_.
 
-
 # Run the app locally
 
 npm run build
