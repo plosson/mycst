@@ -1,0 +1,41 @@
+html {
+    font-family: "Open Sans";
+}
+
+#qr-content {
+    max-height: 150px;
+    max-width: 150px;
+    position: relative;
+}
+
+#qr-content-large {
+    max-height: 500px;
+    max-width: 500px;
+    position: relative;
+}
+
+#qr-content #bm, #qr-content #bm-large {
+    width: 100%;
+    height: 100%;
+}
+
+#qrcode, #qrcode-large {
+    width: 90%;
+    height: 90%;
+    position: absolute;
+    left: 5%;
+    top: 5%;
+}
+
+
+/*#videoContainer {
+    box-sizing: border-box;
+    height: 100%;
+    overflow: hidden;
+    width: 100%;
+}
+
+*/
+/*#videoContainer video {
+    height: 100%;
+}*/
