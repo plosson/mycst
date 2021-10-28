@@ -6,6 +6,19 @@ const qs = require('query-string')
 import {Base64} from 'js-base64';
 import './style.css';
 
+import * as Sentry from "@sentry/browser";
+import {Integrations} from "@sentry/tracing";
+
+Sentry.init({
+    dsn: "https://9e26520f21cb4a16b36eed8515276dea@o556453.ingest.sentry.io/6040196",
+    integrations: [new Integrations.BrowserTracing()],
+
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    // We recommend adjusting this value in production
+    tracesSampleRate: 1.0,
+});
+
 function parseUrl(url) {
     return qs.parseUrl(url);
 }
@@ -27,11 +40,9 @@ function mergeQS(params, param) {
     const parts = [];
     for (let i = 0; i < Object.keys(params).length; i++) {
         const key = param + i;
-        if (params[key])
-        {
+        if (params[key]) {
             parts.push(params[key]);
-        }
-        else{
+        } else {
             break;
         }
     }
