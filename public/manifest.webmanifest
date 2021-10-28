@@ -1,0 +1,15 @@
+{
+  "background_color": "purple",
+  "description": "My CST - Store your CST safely",
+  "display": "fullscreen",
+  "icons": [
+    {
+      "src": "/public/img/favicon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    }
+  ],
+  "name": "My CST",
+  "short_name": "MyCST",
+  "start_url": "/"
+}

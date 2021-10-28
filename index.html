@@ -44,7 +44,7 @@
                 },
                 "page": location.hash,
                 "changePage": function (page) {
-                    if (location.hash !== page){
+                    if (location.hash !== page) {
                         this.page = page;
                         location.hash = page;
                     }
@@ -94,16 +94,16 @@
                     });
 
                     var canvas = document.querySelector('#qrcode > canvas'),
-                        ctx    = canvas.getContext('2d');
+                        ctx = canvas.getContext('2d');
                     fitToContainer(canvas);
 
                     var canvas = document.querySelector('#qrcode-large > canvas'),
-                        ctx    = canvas.getContext('2d');
+                        ctx = canvas.getContext('2d');
                     fitToContainer(canvas);
 
                 },
                 "showPass": function (data) {
-                    window.location.href = "?" + dgc.splitQS(dgc.encode64(data),"p") + '#qr';
+                    window.location.href = "?" + dgc.splitQS(dgc.encode64(data), "p") + '#qr';
                 },
                 "formatDate": function (date, format) {
                     return dgc.formatDate(date, format);
@@ -152,9 +152,9 @@
                 "init": function () {
                     const url = dgc.parseUrl(window.location.href);
                     if (url.query.p0) {
-                        const merged = dgc.mergeQS(url.query,"p");
+                        const merged = dgc.mergeQS(url.query, "p");
                         this.initPass(dgc.decode64(merged));
-                        if (this.page === ''){
+                        if (this.page === '') {
                             this.changePage('#qr');
                         }
                     } else {
@@ -175,9 +175,9 @@
             }
         }
 
-        function fitToContainer(canvas){
-            canvas.style.width='100%';
-            canvas.style.height='100%';
+        function fitToContainer(canvas) {
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
         }
 
         function getAspectRatio() {
@@ -185,6 +185,20 @@
             const realHeight = window.screen.height * window.devicePixelRatio;
             const aspectRatio = realHeight / realWidth;
             return aspectRatio;
+        }
+
+        function showAddToHome() {
+            const isIos = () => {
+                const userAgent = window.navigator.userAgent.toLowerCase();
+                return /iphone|ipad|ipod/.test(userAgent);
+            }
+            // Detects if device is in standalone mode
+            const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+
+            // Checks if should display install popup notification:
+            if (isIos() && !isInStandaloneMode()) {
+                this.setState({showInstallMessage: true});
+            }
         }
 
     </script>

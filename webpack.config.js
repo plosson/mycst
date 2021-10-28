@@ -31,6 +31,8 @@ module.exports = {
         }),
         new CopyPlugin({
             patterns: [
+                {from: "serviceworker.js", to:""},
+                {from: "public/*.webmanifest"},
                 {from: "public/js/*.js"},
                 {from: "public/json/*.json"},
                 {from: "public/img/*.png"},
@@ -39,6 +41,7 @@ module.exports = {
             ],
         }),
         new HtmlWebpackPlugin({
+            inject: false,
             filename: 'index.html',
             template: 'index.html'
         }),
