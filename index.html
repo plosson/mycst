@@ -55,24 +55,9 @@
                     this.pass = result.json;
                     const text = result.text;
 
+
                     document.getElementById("qrcode").innerHTML = "";
                     document.getElementById("qrcode-large").innerHTML = "";
-                    const qr = new QRCode(document.getElementById("qrcode"), {
-                        text: text,
-                        width: 200,
-                        height: 200,
-                        colorDark: "#000000",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
-                    const qr_large = new QRCode(document.getElementById("qrcode-large"), {
-                        text: text,
-                        width: 300,
-                        height: 300,
-                        colorDark: "#000000",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
 
                     bodymovin.destroy();
                     bodymovin.loadAnimation({
@@ -90,6 +75,32 @@
                         autoplay: true,
                         path: '/public/json/qr_code.json'
                     });
+
+                    const qr = new QRCode(document.getElementById("qrcode"), {
+                        text: text,
+                        width: 200,
+                        height: 200,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                    const qr_large = new QRCode(document.getElementById("qrcode-large"), {
+                        text: text,
+                        width: 300,
+                        height: 300,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+
+                    var canvas = document.querySelector('#qrcode > canvas'),
+                        ctx    = canvas.getContext('2d');
+                    fitToContainer(canvas);
+
+                    var canvas = document.querySelector('#qrcode-large > canvas'),
+                        ctx    = canvas.getContext('2d');
+                    fitToContainer(canvas);
+
                 },
                 "showPass": function (data) {
                     window.location.href = "?" + dgc.splitQS(dgc.encode64(data),"p") + '#qr';
@@ -164,6 +175,11 @@
             }
         }
 
+        function fitToContainer(canvas){
+            canvas.style.width='100%';
+            canvas.style.height='100%';
+        }
+
         function getAspectRatio() {
             const realWidth = window.screen.width * window.devicePixelRatio;
             const realHeight = window.screen.height * window.devicePixelRatio;
@@ -187,7 +203,7 @@
 <div id="qr" x-show="page=='#qr'" class="p-4 flex flex-col items-center bg-green-50 h-screen" x-cloak>
     <div id="qr-content" class="w-7/12">
         <div id="bm"></div>
-        <div id="qrcode" x-on:click="changePage('#details')"></div>
+        <div id="qrcode" x-on:click="changePage('#details')" class="w-7/12"></div>
     </div>
     <div id="info">
         <p class="text-xs mt-2">Tap the QR-code to enlarge</p>
