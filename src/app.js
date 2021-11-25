@@ -90,7 +90,7 @@ function capitalizeFirstLetter(string) {
 }
 
 function createQR(divElement, options) {
-    // Create QRCode Object
+    options.correctLevel = QRCode.CorrectLevel.H;
     new QRCode(divElement, options);
 }
 

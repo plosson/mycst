@@ -50,11 +50,10 @@
                     }
                 },
                 "cameraId": "",
-                "initPass": function (data) {
+                "initPass": function (data, logoId) {
                     let result = dgc.decodeDGC(data);
                     this.pass = result.json;
                     const text = result.text;
-
 
                     document.getElementById("qrcode").innerHTML = "";
                     document.getElementById("qrcode-large").innerHTML = "";
@@ -76,46 +75,30 @@
                         path: '/public/json/qr_code.json'
                     });
 
-                    /*
-                    const qr = new QRCode(document.getElementById("qrcode"), {
-                        text: text,
-                        width: 200,
-                        height: 200,
-                        colorDark: "#000000",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
-                    const qr_large = new QRCode(document.getElementById("qrcode-large"), {
-                        text: text,
-                        width: 300,
-                        height: 300,
-                        colorDark: "#000000",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
-
-*/
-
                     dgc.createQR(document.getElementById("qrcode"), {
                         text: text,
                         width: 200,
                         height: 200,
                         colorDark: "#000000",
                         colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
                     });
-                    dgc.createQR(document.getElementById("qrcode-large"), {
+
+                    let largeOptions = {
                         text: text,
                         width: 300,
                         height: 300,
                         colorDark: "#000000",
                         colorLight: "#ffffff",
-                        logo: '/public/img/qr_logo_2.png',
-                        logoWidth: 80,
-                        logoHeight: 80,
-                        logoBackgroundTransparent: false,
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
+                    };
+
+                    if (logoId) {
+                        largeOptions.logo = `/public/img/qr_logo_${logoId}.png`;
+                        largeOptions.logoWidth = 80;
+                        largeOptions.logoHeight = 80;
+                        largeOptions.logoBackgroundTransparent = false;
+                    }
+
+                    dgc.createQR(document.getElementById("qrcode-large"), largeOptions);
 
                     var canvas = document.querySelector('#qrcode > canvas'),
                         ctx = canvas.getContext('2d');
@@ -180,7 +163,7 @@
                     const url = dgc.parseUrl(window.location.href);
                     if (url.query.p0) {
                         const merged = dgc.mergeQS(url.query, "p");
-                        this.initPass(dgc.decode64(merged));
+                        this.initPass(dgc.decode64(merged), url.query.logo);
                         if (this.page === '') {
                             this.changePage('#qr');
                         }
