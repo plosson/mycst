@@ -6,6 +6,8 @@ const qs = require('query-string')
 import {Base64} from 'js-base64';
 import './style.css';
 
+const QRCode = require('easyqrcodejs');
+
 //import * as Sentry from "@sentry/browser";
 //import {Integrations} from "@sentry/tracing";
 
@@ -87,8 +89,13 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function createQR(divElement, options) {
+    // Create QRCode Object
+    new QRCode(divElement, options);
+}
 
-export {splitQS, mergeQS, decode64, encode64, parseUrl, decodeDGC}
+
+export {splitQS, mergeQS, decode64, encode64, parseUrl, decodeDGC, createQR}
 
 
 

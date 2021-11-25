@@ -44,7 +44,7 @@
                 },
                 "page": location.hash,
                 "changePage": function (page) {
-                    if (location.hash !== page){
+                    if (location.hash !== page) {
                         this.page = page;
                         location.hash = page;
                     }
@@ -76,6 +76,7 @@
                         path: '/public/json/qr_code.json'
                     });
 
+                    /*
                     const qr = new QRCode(document.getElementById("qrcode"), {
                         text: text,
                         width: 200,
@@ -93,20 +94,43 @@
                         correctLevel: QRCode.CorrectLevel.H
                     });
 
+*/
+
+                    dgc.createQR(document.getElementById("qrcode"), {
+                        text: text,
+                        width: 200,
+                        height: 200,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                    dgc.createQR(document.getElementById("qrcode-large"), {
+                        text: text,
+                        width: 300,
+                        height: 300,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        logo: '/public/img/qr_logo_2.png',
+                        logoWidth: 80,
+                        logoHeight: 80,
+                        logoBackgroundTransparent: false,
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+
                     var canvas = document.querySelector('#qrcode > canvas'),
-                        ctx    = canvas.getContext('2d');
+                        ctx = canvas.getContext('2d');
                     fitToContainer(canvas);
 
                     var canvas = document.querySelector('#qrcode-large > canvas'),
-                        ctx    = canvas.getContext('2d');
-                    fitToContainer(canvas);
+                        ctx = canvas.getContext('2d');
 
+                    fitToContainer(canvas);
                 },
-                "encode": function(){
-                    window.location.href = "?" + dgc.splitQS(dgc.encode64(this.pass.text),"p") + '#qr';
+                "encode": function () {
+                    window.location.href = "?" + dgc.splitQS(dgc.encode64(this.pass.text), "p") + '#qr';
                 },
                 "showPass": function (data) {
-                    window.location.href = "?" + dgc.splitQS(dgc.encode64(data),"p") + '#qr';
+                    window.location.href = "?" + dgc.splitQS(dgc.encode64(data), "p") + '#qr';
                 },
                 "formatDate": function (date, format) {
                     return dgc.formatDate(date, format);
@@ -155,13 +179,12 @@
                 "init": function () {
                     const url = dgc.parseUrl(window.location.href);
                     if (url.query.p0) {
-                        const merged = dgc.mergeQS(url.query,"p");
+                        const merged = dgc.mergeQS(url.query, "p");
                         this.initPass(dgc.decode64(merged));
-                        if (this.page === ''){
+                        if (this.page === '') {
                             this.changePage('#qr');
                         }
-                    }
-                    else if (this.page !== '#encode') {
+                    } else if (this.page !== '#encode') {
                         // This method will trigger user permissions
                         Html5Qrcode.getCameras().then(devices => {
                             //console.log(devices);
@@ -179,9 +202,9 @@
             }
         }
 
-        function fitToContainer(canvas){
-            canvas.style.width='100%';
-            canvas.style.height='100%';
+        function fitToContainer(canvas) {
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
         }
 
         function getAspectRatio() {
@@ -247,7 +270,8 @@
     </div>
     <div class="mt-2">
         <button x-on:click.prevent="encode"
-                class="content-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Encode</button>
+                class="content-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Encode
+        </button>
     </div>
 
 </div>
