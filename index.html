@@ -11,18 +11,18 @@
 
     <meta property="og:title" content="My CST">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://my-cst.link/">
+    <meta property="og:url" content="https://mycst.link/">
     <meta property="og:description" content="My CST - Store your CST safely">
-    <meta property="og:image" content="https://my-cst.link/public/img/favicon-152x152.png">
+    <meta property="og:image" content="https://mycst.link/public/img/favicon-152x152.png">
 
     <!-- Twitter Card data -->
     <meta name="twitter:card" content="summary"/>
     <meta name="twitter:title" content="My CST"/>
     <meta name="twitter:description" content="My CST - Store your CST safely"/>
-    <meta name="twitter:image:src" content="https://my-cst.link/public/img/favicon-152x152.png"/>
+    <meta name="twitter:image" content="https://mycst.link/public/img/favicon-152x152.png"/>
 
     <meta name="application-name" content="My CST"/>
-    <script src="/bundle.js?ts=5"></script>
+    <script src="/bundle.js?ts=7"></script>
     <%= require('html-loader!./head.html').default %>
     <script src="/public/js/html5-qrcode.min.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -42,6 +42,7 @@
                         "gnt": "JOHN"
                     }
                 },
+                "logo": "",
                 "page": location.hash,
                 "changePage": function (page) {
                     if (location.hash !== page) {
@@ -50,11 +51,10 @@
                     }
                 },
                 "cameraId": "",
-                "initPass": function (data) {
+                "initPass": function (data, logoId) {
                     let result = dgc.decodeDGC(data);
                     this.pass = result.json;
                     const text = result.text;
-
 
                     document.getElementById("qrcode").innerHTML = "";
                     document.getElementById("qrcode-large").innerHTML = "";
@@ -76,22 +76,30 @@
                         path: '/public/json/qr_code.json'
                     });
 
-                    const qr = new QRCode(document.getElementById("qrcode"), {
+                    dgc.createQR(document.getElementById("qrcode"), {
                         text: text,
                         width: 200,
                         height: 200,
                         colorDark: "#000000",
                         colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
                     });
-                    const qr_large = new QRCode(document.getElementById("qrcode-large"), {
+
+                    let largeOptions = {
                         text: text,
                         width: 300,
                         height: 300,
                         colorDark: "#000000",
                         colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
+                    };
+
+                    if (logoId && logoId.length > 0) {
+                        largeOptions.logo = `/public/img/qr_logo_${logoId}.png`;
+                        largeOptions.logoWidth = 80;
+                        largeOptions.logoHeight = 80;
+                        largeOptions.logoBackgroundTransparent = false;
+                    }
+
+                    dgc.createQR(document.getElementById("qrcode-large"), largeOptions);
 
                     var canvas = document.querySelector('#qrcode > canvas'),
                         ctx = canvas.getContext('2d');
@@ -99,11 +107,14 @@
 
                     var canvas = document.querySelector('#qrcode-large > canvas'),
                         ctx = canvas.getContext('2d');
-                    fitToContainer(canvas);
 
+                    fitToContainer(canvas);
+                },
+                "encode": function () {
+                    window.location.href = getPassUrl(this.pass.text, this.logo);
                 },
                 "showPass": function (data) {
-                    window.location.href = "?" + dgc.splitQS(dgc.encode64(data), "p") + '#qr';
+                    window.location.href = getPassUrl(data, this.logo);
                 },
                 "formatDate": function (date, format) {
                     return dgc.formatDate(date, format);
@@ -117,14 +128,15 @@
                         },
                         decodedText => {
                             try {
-                                this.showPass(decodedText, true);
+                                this.showPass(decodedText);
                             } catch (e) {
-                                console.log(e);
+                                console.log(`Error scanning file. Reason: ${err}`)
                             }
                         },
                         errorMessage => {
                         })
                         .catch(err => {
+                            console.log(`Error scanning file. Reason: ${err}`)
                         });
 
                     const fileinput = document.getElementById('qr-input-file');
@@ -142,7 +154,6 @@
                                 that.showPass(decodedText);
                             })
                             .catch(err => {
-                                // failure, handle it.
                                 console.log(`Error scanning file. Reason: ${err}`)
                             });
                     });
@@ -151,13 +162,17 @@
                 },
                 "init": function () {
                     const url = dgc.parseUrl(window.location.href);
+                    if (url.query.logo)
+                    {
+                        this.logo = url.query.logo;
+                    }
                     if (url.query.p0) {
                         const merged = dgc.mergeQS(url.query, "p");
-                        this.initPass(dgc.decode64(merged));
+                        this.initPass(dgc.decode64(merged), url.query.logo);
                         if (this.page === '') {
                             this.changePage('#qr');
                         }
-                    } else {
+                    } else if (this.page !== '#encode') {
                         // This method will trigger user permissions
                         Html5Qrcode.getCameras().then(devices => {
                             //console.log(devices);
@@ -175,6 +190,18 @@
             }
         }
 
+        function getPassUrl(text, logo){
+            try {
+                var url = "?" + dgc.splitQS(dgc.encode64(text), "p");
+                if (logo && logo.length > 0) {
+                    url = url + "&logo=" + logo;
+                }
+            } catch (e) {
+                console.log(e);
+            }
+            return url + "#qr";
+        }
+
         function fitToContainer(canvas) {
             canvas.style.width = '100%';
             canvas.style.height = '100%';
@@ -185,20 +212,6 @@
             const realHeight = window.screen.height * window.devicePixelRatio;
             const aspectRatio = realHeight / realWidth;
             return aspectRatio;
-        }
-
-        function showAddToHome() {
-            const isIos = () => {
-                const userAgent = window.navigator.userAgent.toLowerCase();
-                return /iphone|ipad|ipod/.test(userAgent);
-            }
-            // Detects if device is in standalone mode
-            const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
-
-            // Checks if should display install popup notification:
-            if (isIos() && !isInStandaloneMode()) {
-                this.setState({showInstallMessage: true});
-            }
         }
 
     </script>
@@ -247,5 +260,19 @@
         <a href="#" x-on:click="changePage('#qr')" class="font-bold">Back to overview</a>
     </div>
 </div>
+<div id="from-txt" x-show="page=='#encode'" class="p-4 flex flex-col w-full h-screen items-center" x-cloak>
+    <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2 w-full" for="qr-data">
+            Code Text
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+               id="qr-data" type="text" placeholder="HC1" x-model="pass.text">
+    </div>
+    <div class="mt-2">
+        <button x-on:click.prevent="encode"
+                class="content-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Encode
+        </button>
+    </div>
 
+</div>
 </body>

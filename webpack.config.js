@@ -43,7 +43,8 @@ module.exports = {
         new HtmlWebpackPlugin({
             inject: false,
             filename: 'index.html',
-            template: 'index.html'
+            template: 'index.html',
+            inject: false,
         }),
     ],
     resolve: {
@@ -52,8 +53,10 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, './dist'),
         filename: 'bundle.js',
-        library: 'dgc'
+        library: 'dgc',
+        sourceMapFilename: "bundle.js.map"
     },
+    devtool: "source-map",
     devServer: {
         static: {
             directory: path.join(__dirname, './dist'),
