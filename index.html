@@ -63,6 +63,7 @@
                         "gnt": "JOHN"
                     }
                 },
+                "logo": "",
                 "page": location.hash,
                 "changePage": function (page) {
                     if (location.hash !== page) {
@@ -112,7 +113,7 @@
                         colorLight: "#ffffff",
                     };
 
-                    if (logoId) {
+                    if (logoId && logoId.length > 0) {
                         largeOptions.logo = `/public/img/qr_logo_${logoId}.png`;
                         largeOptions.logoWidth = 80;
                         largeOptions.logoHeight = 80;
@@ -131,10 +132,10 @@
                     fitToContainer(canvas);
                 },
                 "encode": function () {
-                    window.location.href = "?" + dgc.splitQS(dgc.encode64(this.pass.text), "p") + '#qr';
+                    window.location.href = getPassUrl(this.pass.text, this.logo);
                 },
                 "showPass": function (data) {
-                    window.location.href = "?" + dgc.splitQS(dgc.encode64(data), "p") + '#qr';
+                    window.location.href = getPassUrl(data, this.logo);
                 },
                 "formatDate": function (date, format) {
                     return dgc.formatDate(date, format);
@@ -148,14 +149,15 @@
                         },
                         decodedText => {
                             try {
-                                this.showPass(decodedText, true);
+                                this.showPass(decodedText);
                             } catch (e) {
-                                console.log(e);
+                                console.log(`Error scanning file. Reason: ${err}`)
                             }
                         },
                         errorMessage => {
                         })
                         .catch(err => {
+                            console.log(`Error scanning file. Reason: ${err}`)
                         });
 
                     const fileinput = document.getElementById('qr-input-file');
@@ -173,7 +175,6 @@
                                 that.showPass(decodedText);
                             })
                             .catch(err => {
-                                // failure, handle it.
                                 console.log(`Error scanning file. Reason: ${err}`)
                             });
                     });
@@ -182,6 +183,10 @@
                 },
                 "init": function () {
                     const url = dgc.parseUrl(window.location.href);
+                    if (url.query.logo)
+                    {
+                        this.logo = url.query.logo;
+                    }
                     if (url.query.p0) {
                         const merged = dgc.mergeQS(url.query, "p");
                         this.initPass(dgc.decode64(merged), url.query.logo);
@@ -204,6 +209,18 @@
                     }
                 },
             }
+        }
+
+        function getPassUrl(text, logo){
+            try {
+                var url = "?" + dgc.splitQS(dgc.encode64(text), "p");
+                if (logo && logo.length > 0) {
+                    url = url + "&logo=" + logo;
+                }
+            } catch (e) {
+                console.log(e);
+            }
+            return url + "#qr";
         }
 
         function fitToContainer(canvas) {
