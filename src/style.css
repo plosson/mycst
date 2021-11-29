@@ -27,15 +27,15 @@ html {
     top: 5%;
 }
 
-
-/*#videoContainer {
-    box-sizing: border-box;
-    height: 100%;
-    overflow: hidden;
-    width: 100%;
+#videoContainer {
+    width: 640px;
+}
+@media(max-width: 600px) {
+    #videoContainer {
+        width: 300px;
+    }
 }
 
-*/
 /*#videoContainer video {
     height: 100%;
 }*/

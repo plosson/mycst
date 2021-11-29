@@ -1,0 +1,24 @@
+<div id="qr" x-show="page=='#qr'" class="p-4 flex flex-col items-center bg-green-50 h-screen" x-cloak>
+    <div id="qr-content" class="w-7/12">
+        <div id="bm"></div>
+        <div id="qrcode" x-on:click="changePage('#details')" class="w-7/12"></div>
+    </div>
+    <div id="info">
+        <p class="text-xs mt-2">Tap the QR-code to enlarge</p>
+    </div>
+    <div class="w-11/12 mt-5 p-3 bg-black text-gray-200 relative overflow-hidden rounded-xl flex flex-col"
+         style="background-image: url('/public/img/eu_avatar_big_light_cropped.png'); background-repeat: no-repeat; background-position: right 0 top 0;">
+        <div class="mb-2">
+            <p class="text-xs">Last name</p>
+            <p><span x-text="pass.nam.fn"></span></p>
+        </div>
+        <div class="mb-2">
+            <p class="text-xs">Given name</p>
+            <p><span x-text="pass.nam.gn"></span></p>
+        </div>
+        <div class="mb-2">
+            <p class="text-xs">Date of birth</p>
+            <p><span x-text="pass.dob"></span></p>
+        </div>
+    </div>
+</div>

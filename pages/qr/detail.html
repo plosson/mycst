@@ -1,0 +1,9 @@
+<div id="qr-detail" x-show="page=='#details'" class="p-4 flex flex-col h-screen items-center" x-cloak>
+    <div id="qr-content-large" class="mt-20">
+        <div id="bm-large"></div>
+        <div id="qrcode-large" class="object-scale-down w-11/12"></div>
+    </div>
+    <div class="mt-5">
+        <a href="" x-on:click.prevent="changePage('#qr')" class="font-bold">Back to overview</a>
+    </div>
+</div>

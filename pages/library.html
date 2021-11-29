@@ -1,0 +1,31 @@
+<div id="library" x-show="page=='#library'" class="p-4 flex flex-col h-screen items-center" x-cloak>
+    <h1 class="border-b-2 border-blue-300">My Passes</h1>
+    <template x-for="(p,index) in library">
+        <div class="w-11/12 mt-5 p-3 bg-gray-100 relative overflow-hidden rounded-xl flex flex-col"
+             x-on:click="logo = p.logo; showPass(p.text, p.logo)">
+            <div class="mb-2 flex flex-row justify-between">
+                <div>
+                    <p><img class="inline" src="/public/img/avatar_success_light.svg" width="24px">
+                        <span x-text="p.json.nam.gn"></span> <span x-text="p.json.nam.fn"></span> <span x-show="p.logo" x-text="`[${p.logo}]`"></span></p>
+                </div>
+                <div class="bg-white rounded-full w-6 h-6 flex justify-center items-center text-center p-4" x-cloak>
+                    <span class="material-icons" style="font-size: 18px;">check</span>
+                </div>
+            </div>
+            <div class="mb-2 flex flex-row justify-between">
+                <div>
+                    <p><span class="text-sm" x-text="p.json.dob"></span></p>
+                </div>
+                <div class="mt-3">
+                    <span class="material-icons text-gray-400">chevron_right</span>
+                </div>
+            </div>
+        </div>
+    </template>
+    <div class="mt-3" x-show="library.length > 0" x-cloak>
+        <a href="#library" x-on:click="library = []">Delete All</a>
+    </div>
+    <div class="mt-3" x-show="library.length == 0" x-cloak>
+        You don't have any saved passes.
+    </div>
+</div>

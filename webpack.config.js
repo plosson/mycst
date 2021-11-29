@@ -3,6 +3,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
+
 const webpack = require('webpack');
 
 module.exports = {
@@ -25,14 +26,13 @@ module.exports = {
         ]
     },
     plugins: [
+        new webpack.ProgressPlugin(),
         new MomentLocalesPlugin(),
         new webpack.ProvidePlugin({
             Buffer: ['buffer', 'Buffer'],
         }),
         new CopyPlugin({
             patterns: [
-                {from: "serviceworker.js", to:""},
-                {from: "public/*.webmanifest"},
                 {from: "public/js/*.js"},
                 {from: "public/json/*.json"},
                 {from: "public/img/*.png"},
@@ -41,22 +41,19 @@ module.exports = {
             ],
         }),
         new HtmlWebpackPlugin({
-            inject: false,
             filename: 'index.html',
             template: 'index.html',
             inject: false,
         }),
     ],
     resolve: {
-        extensions: ['*', '.js'],
+        extensions: ['.js'],
     },
     output: {
         path: path.resolve(__dirname, './dist'),
         filename: 'bundle.js',
         library: 'dgc',
-        sourceMapFilename: "bundle.js.map"
     },
-    devtool: "source-map",
     devServer: {
         static: {
             directory: path.join(__dirname, './dist'),

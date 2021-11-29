@@ -6,7 +6,12 @@ const qs = require('query-string')
 import {Base64} from 'js-base64';
 import './style.css';
 
+// use with commonJS
+const {BrowserQRCodeReader} = require('@zxing/browser');
+
+// to generate a QR code
 const QRCode = require('easyqrcodejs');
+import {Html5Qrcode, Html5QrcodeSupportedFormats} from "html5-qrcode"
 
 import * as Sentry from "@sentry/browser";
 import {Integrations} from "@sentry/tracing";
@@ -94,8 +99,73 @@ function createQR(divElement, options) {
     new QRCode(divElement, options);
 }
 
+function uploadQR(divElement, fileElement, callback) {
+    const imageContainer = document.getElementById(divElement);
+    const fileinput = document.getElementById(fileElement);
+    fileinput.addEventListener('change', e => {
+        if (e.target.files.length == 0) {
+            return;
+        }
 
-export {splitQS, mergeQS, decode64, encode64, parseUrl, decodeDGC, createQR}
+        const imageFile = e.target.files[0];
+        console.log(imageFile);
+        const img = new Image();
+        img.src = URL.createObjectURL(imageFile);
+        imageContainer.append(img);
+
+        const codeReader = new BrowserQRCodeReader();
+        codeReader.decodeFromImageElement(img).then(r => callback(r.getText()));
+    });
+    /*const html5QrCode = new Html5Qrcode(divElement, {
+        verbose: true,
+        formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE]
+    });
+    const imageContainer = document.getElementById(divElement);
+    const fileinput = document.getElementById(fileElement);
+    fileinput.addEventListener('change', e => {
+        if (e.target.files.length == 0) {
+            return;
+        }
+        const imageFile = e.target.files[0];
+        html5QrCode.scanFile(imageFile, true)
+            .then(decodedText => {
+                callback(decodedText);
+            });
+    });*/
+}
+
+function scanQR(divElement, aspectRatio, callback) {
+    const html5QrCode = new Html5Qrcode(divElement, {formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE]});
+    html5QrCode.start({facingMode: "environment"}, {
+            fps: 10,
+            rememberLastUsedCamera: true,
+            qrbox: 250
+        },
+        decodedText => {
+            try {
+                callback(decodedText);
+            } catch (e) {
+                console.log(`Error scanning file. Reason: ${err}`)
+            }
+        },
+        errorMessage => {
+        })
+        .catch(err => {
+            console.log(`Error scanning file. Reason: ${err}`)
+        });
+    return html5QrCode;
+}
+
+function getAspectRatio() {
+    const realWidth = window.screen.width * window.devicePixelRatio;
+    const realHeight = window.screen.height * window.devicePixelRatio;
+    const aspectRatio = realHeight / realWidth;
+    console.log(aspectRatio);
+    return aspectRatio;
+}
+
+
+export {splitQS, mergeQS, decode64, encode64, parseUrl, decodeDGC, createQR, uploadQR, scanQR}
 
 
 
