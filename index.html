@@ -22,7 +22,7 @@
     <meta name="twitter:image" content="https://mycst.link/public/img/favicon-152x152.png"/>
 
     <meta name="application-name" content="My CST"/>
-    <script src="/bundle.js?ts=7"></script>
+    <script src="/bundle.js?ts=8"></script>
     <link rel="icon" type="image/png" sizes="32x32" href="cac4565562df515771d3.png">
 <link rel="icon" type="image/png" sizes="16x16" href="5dd8cad89b0b6b42298e.png">
 <link rel="icon" type="image/png" sizes="152x152" href="7d5e17338c0bc84a74ac.png">
@@ -42,16 +42,40 @@
 <script src="//unpkg.com/@alpinejs/persist@3.x.x/dist/cdn.min.js" type="text/javascript" defer></script>
 <script src="//unpkg.com/alpinejs@3.x.x" type="text/javascript" defer></script>
 
+<!-- Manifest File link -->
+<!--<link rel="manifest" href="/public/manifest.webmanifest">-->
+
+<script>
+    /*
+    window.addEventListener('load', () => {
+        registerSW();
+    });
+
+    // Register the Service Worker
+    async function registerSW() {
+        if ('serviceWorker' in navigator) {
+            try {
+                await navigator
+                    .serviceWorker
+                    .register('/serviceworker.js');
+            } catch (e) {
+                console.log('SW registration failed');
+            }
+        }
+    }*/
+</script>
+
 <style type="text/css">
-    [x-cloak] { display: none !important; }
+    [x-cloak] {
+        display: none !important;
+    }
 </style>
-    <script src="/public/js/html5-qrcode.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         var html5QrCode = null;
-        var cameraId = null;
 
         function data() {
             return {
+                "library": this.$persist([]),
                 "pass": {
                     "dob": "1975-01-01",
                     "dob_str": "January 1st 1975",
@@ -63,19 +87,62 @@
                         "gnt": "JOHN"
                     }
                 },
-                "logo": "",
+                "text": "",
+                "logo": this.$persist(""),
                 "page": location.hash,
                 "changePage": function (page) {
-                    if (location.hash !== page) {
-                        this.page = page;
-                        location.hash = page;
+                    this.page = page;
+                    if (page === '' || page === '#') {
+
+                        // check if scanner is started
+                        const that = this;
+                        if (html5QrCode == null) {
+                            html5QrCode = dgc.scanQR("videoContainer", getAspectRatio(), decodedText => {
+                                that.savePass(decodedText);
+                            });
+                        }
+                    } else {
+                        if (html5QrCode != null) {
+                            try {
+                                html5QrCode.stop();
+                            } catch (e) {
+                                // silent
+                            }
+                            html5QrCode = null;
+                        }
+                    }
+
+                    if (page === '#upload') {
+
+                        const fileinput = document.getElementById('qr-input-file');
+                        const that = this;
+                        dgc.uploadQR("imageContainer", "qr-input-file", decodedText => {
+                            that.savePass(decodedText);
+                            document.getElementById("imageContainer").innerHTML = "";
+                            fileinput.value = "";
+                        });
+                    }
+
+                    if (page === '#library') {
                     }
                 },
-                "cameraId": "",
+                "findPass": function (data) {
+                    // find in library
+                    return this.library.findIndex(element => element.text === data);
+                },
+                "deletePass": function (data) {
+                    // find in library
+                    const index = this.findPass(data);
+                    if (index > -1) {
+                        this.library.splice(index, 1);
+                        this.changePage('#library');
+                    }
+                    // go back to scan page
+                },
                 "initPass": function (data, logoId) {
                     let result = dgc.decodeDGC(data);
                     this.pass = result.json;
-                    const text = result.text;
+                    this.text = result.text;
 
                     document.getElementById("qrcode").innerHTML = "";
                     document.getElementById("qrcode-large").innerHTML = "";
@@ -98,7 +165,7 @@
                     });
 
                     dgc.createQR(document.getElementById("qrcode"), {
-                        text: text,
+                        text: this.text,
                         width: 200,
                         height: 200,
                         colorDark: "#000000",
@@ -106,7 +173,7 @@
                     });
 
                     let largeOptions = {
-                        text: text,
+                        text: this.text,
                         width: 300,
                         height: 300,
                         colorDark: "#000000",
@@ -134,57 +201,23 @@
                 "encode": function () {
                     window.location.href = getPassUrl(this.pass.text, this.logo);
                 },
+                "savePass": function (data) {
+                    let p = JSON.parse(JSON.stringify(dgc.decodeDGC(data)));
+                    p.logo = this.logo;
+                    console.log('saving pass ' + p.text);
+                    this.library.push(p);
+                    this.showPass(data);
+                },
                 "showPass": function (data) {
+                    console.log(data);
                     window.location.href = getPassUrl(data, this.logo);
                 },
                 "formatDate": function (date, format) {
                     return dgc.formatDate(date, format);
                 },
-                "startScanning": function () {
-                    html5QrCode = new Html5Qrcode("videoContainer", {formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE]});
-                    html5QrCode.start(this.cameraId, {
-                            fps: 10,
-                            rememberLastUsedCamera: true,
-                            aspectRatio: getAspectRatio()
-                        },
-                        decodedText => {
-                            try {
-                                this.showPass(decodedText);
-                            } catch (e) {
-                                console.log(`Error scanning file. Reason: ${err}`)
-                            }
-                        },
-                        errorMessage => {
-                        })
-                        .catch(err => {
-                            console.log(`Error scanning file. Reason: ${err}`)
-                        });
-
-                    const fileinput = document.getElementById('qr-input-file');
-                    const that = this;
-                    fileinput.addEventListener('change', e => {
-                        if (e.target.files.length == 0) {
-                            return;
-                        }
-                        const imageFile = e.target.files[0];
-                        // Scan QR Code
-                        const that = this;
-                        html5QrCode.stop();
-                        html5QrCode.scanFile(imageFile, true)
-                            .then(decodedText => {
-                                that.showPass(decodedText);
-                            })
-                            .catch(err => {
-                                console.log(`Error scanning file. Reason: ${err}`)
-                            });
-                    });
-
-
-                },
                 "init": function () {
                     const url = dgc.parseUrl(window.location.href);
-                    if (url.query.logo)
-                    {
+                    if (url.query.logo) {
                         this.logo = url.query.logo;
                     }
                     if (url.query.p0) {
@@ -193,25 +226,13 @@
                         if (this.page === '') {
                             this.changePage('#qr');
                         }
-                    } else if (this.page !== '#encode') {
-                        // This method will trigger user permissions
-                        Html5Qrcode.getCameras().then(devices => {
-                            //console.log(devices);
-                            if (devices && devices.length) {
-                                {
-                                    this.cameraId = devices[devices.length - 1].id;
-                                    this.startScanning();
-                                }
-                            }
-                        }).catch(err => {
-                            console.log(err);
-                        });
                     }
+                    this.changePage(location.hash);
                 },
             }
         }
 
-        function getPassUrl(text, logo){
+        function getPassUrl(text, logo) {
             try {
                 var url = "?" + dgc.splitQS(dgc.encode64(text), "p");
                 if (logo && logo.length > 0) {
@@ -232,22 +253,19 @@
             const realWidth = window.screen.width * window.devicePixelRatio;
             const realHeight = window.screen.height * window.devicePixelRatio;
             const aspectRatio = realHeight / realWidth;
+            console.log(aspectRatio);
             return aspectRatio;
         }
 
     </script>
-<script defer src="bundle.js"></script></head>
+</head>
 
-<body x-data="data" id="body" class="flex flex-col">
-<div id="main" x-show="page===''" x-cloak>
-    <main class="photo flex-1 overflow-y-auto bg-black" id="videoContainer"></main>
-    <div class="w-full h-screen">
-        <section id="bottom-navigation" class="block fixed inset-x-0 bottom-10 z-10 flex flex-row justify-center">
-            <input type="file" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                   id="qr-input-file" accept="image/*">
-        </section>
-    </div>
+<body x-data="data" id="body" class="flex flex-col" @hashchange.window="changePage(location.hash)">
+<div id="main" class="p-4 flex flex-col items-center" x-show="page===''">
+    <h1 class="mb-5 border-b-2 border-blue-300">Scan</h1>
+    <main id="videoContainer"></main>
 </div>
+
 <div id="qr" x-show="page=='#qr'" class="p-4 flex flex-col items-center bg-green-50 h-screen" x-cloak>
     <div id="qr-content" class="w-7/12">
         <div id="bm"></div>
@@ -271,16 +289,24 @@
             <p><span x-text="pass.dob"></span></p>
         </div>
     </div>
+    <div class="mt-2" x-show="findPass(text) > -1">
+        <button x-on:click.prevent="deletePass(text)" class="content-center bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 rounded">Remove</button>
+    </div>
+    <div class="mt-2" x-show="findPass(text) == -1">
+        <button x-on:click.prevent="savePass(text); changePage('#library')" class="content-center bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 rounded">Save</button>
+    </div>
 </div>
+
 <div id="qr-detail" x-show="page=='#details'" class="p-4 flex flex-col h-screen items-center" x-cloak>
     <div id="qr-content-large" class="mt-20">
         <div id="bm-large"></div>
         <div id="qrcode-large" class="object-scale-down w-11/12"></div>
     </div>
     <div class="mt-5">
-        <a href="#" x-on:click="changePage('#qr')" class="font-bold">Back to overview</a>
+        <a href="" x-on:click.prevent="changePage('#qr')" class="font-bold">Back to overview</a>
     </div>
 </div>
+
 <div id="from-txt" x-show="page=='#encode'" class="p-4 flex flex-col w-full h-screen items-center" x-cloak>
     <div class="mb-4">
         <label class="block text-gray-700 text-sm font-bold mb-2 w-full" for="qr-data">
@@ -294,6 +320,72 @@
                 class="content-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Encode
         </button>
     </div>
-
 </div>
+
+<div id="library" x-show="page=='#library'" class="p-4 flex flex-col h-screen items-center" x-cloak>
+    <h1 class="border-b-2 border-blue-300">My Passes</h1>
+    <template x-for="(p,index) in library">
+        <div class="w-11/12 mt-5 p-3 bg-gray-100 relative overflow-hidden rounded-xl flex flex-col"
+             x-on:click="logo = p.logo; showPass(p.text, p.logo)">
+            <div class="mb-2 flex flex-row justify-between">
+                <div>
+                    <p><img class="inline" src="3d3ce27e1c68d289340f.svg" width="24px">
+                        <span x-text="p.json.nam.gn"></span> <span x-text="p.json.nam.fn"></span> <span x-show="p.logo" x-text="`[${p.logo}]`"></span></p>
+                </div>
+                <div class="bg-white rounded-full w-6 h-6 flex justify-center items-center text-center p-4" x-cloak>
+                    <span class="material-icons" style="font-size: 18px;">check</span>
+                </div>
+            </div>
+            <div class="mb-2 flex flex-row justify-between">
+                <div>
+                    <p><span class="text-sm" x-text="p.json.dob"></span></p>
+                </div>
+                <div class="mt-3">
+                    <span class="material-icons text-gray-400">chevron_right</span>
+                </div>
+            </div>
+        </div>
+    </template>
+    <div class="mt-3" x-show="library.length > 0" x-cloak>
+        <a href="#library" x-on:click="library = []">Delete All</a>
+    </div>
+    <div class="mt-3" x-show="library.length == 0" x-cloak>
+        You don't have any saved passes.
+    </div>
+</div>
+
+<div id="library" x-show="page=='#upload'" class="p-4 flex flex-col h-screen items-center" x-cloak>
+    <h1 class="border-b-2 border-blue-300">Upload</h1>
+    <div id="imageContainer"></div>
+    <div class="w-full h-screen">
+        <section id="bottom-navigation" class="flex flex-row justify-center">
+            <input type="file" class="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-10 py-2 px-4 rounded"
+                   id="qr-input-file" accept="image/*">
+        </section>
+    </div>
+</div>
+
+<div class="w-full h-screen">
+    <!-- <section id="bottom-navigation" class="md:hidden block fixed inset-x-0 bottom-0 z-10 bg-white shadow"> // if shown only tablet/mobile-->
+    <section id="bottom-navigation" class="block fixed z-10 inset-x-0 bottom-0 z-10 bg-white shadow">
+        <div id="tabs" class="flex justify-between">
+            <a href="/#library"
+               class="w-full focus:text-teal-500 hover:text-teal-500 justify-center inline-block text-center pt-2 pb-1">
+                <span class="material-icons" style="font-size: 24px;">history</span>
+                <span class="tab tab-home block text-xs">My Passes</span>
+            </a>
+            <a href="/"
+               class="w-full focus:text-teal-500 hover:text-teal-500 justify-center inline-block text-center pt-2 pb-1">
+                <span class="material-icons" style="font-size: 24px;">qr_code_scanner</span>
+                <span class="tab tab-home block text-xs">Scan</span>
+            </a>
+            <a href="/#upload"
+               class="w-full focus:text-teal-500 hover:text-teal-500 justify-center inline-block text-center pt-2 pb-1">
+                <span class="material-icons" style="font-size: 24px;">photo_library</span>
+                <span class="tab tab-explore block text-xs">From Photo</span>
+            </a>
+        </div>
+    </section>
+</div>
+
 </body>
