@@ -22,9 +22,19 @@
         </div>
     </div>
     <div class="mt-2" x-show="findPass(text) > -1">
-        <button x-on:click.prevent="deletePass(text)" class="content-center bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 rounded">Remove</button>
+        <button x-on:click.prevent="deletePass(text)"
+                class="content-center bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 rounded">Remove
+        </button>
     </div>
-    <div class="mt-2" x-show="findPass(text) == -1">
-        <button x-on:click.prevent="savePass(text); changePage('#library')" class="content-center bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 rounded">Save</button>
+    <div class="mt-2" class="flex flex-col items-center" x-show="findPass(text) == -1">
+        <div class="flex justify-center">
+            <button x-on:click.prevent="savePass(text)"
+                    class="content-center bg-blue-500 hover:bg-blue-700 text-white font-bold mt-2 py-2 px-4 rounded">
+                Save
+            </button>
+        </div>
+        <div>
+            <small>Everything is saved on your device only.</small>
+        </div>
     </div>
 </div>
