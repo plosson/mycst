@@ -8,10 +8,10 @@ import './style.css';
 
 const QRCode = require('easyqrcodejs');
 
-//import * as Sentry from "@sentry/browser";
-//import {Integrations} from "@sentry/tracing";
+import * as Sentry from "@sentry/browser";
+import {Integrations} from "@sentry/tracing";
 
-/*Sentry.init({
+Sentry.init({
     dsn: "https://9e26520f21cb4a16b36eed8515276dea@o556453.ingest.sentry.io/6040196",
     integrations: [new Integrations.BrowserTracing()],
 
@@ -20,7 +20,7 @@ const QRCode = require('easyqrcodejs');
     // We recommend adjusting this value in production
     tracesSampleRate: 1.0,
 });
-*/
+
 function parseUrl(url) {
     return qs.parseUrl(url);
 }
