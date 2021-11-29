@@ -41,7 +41,8 @@
                         "gnt": "JOHN"
                     }
                 },
-                "logo": "",
+                "text": "",
+                "logo": this.$persist(""),
                 "page": location.hash,
                 "changePage": function (page) {
                     this.page = page;
@@ -56,7 +57,11 @@
                         }
                     } else {
                         if (html5QrCode != null) {
-                            html5QrCode.stop();
+                            try {
+                                html5QrCode.stop();
+                            } catch (e) {
+                                // silent
+                            }
                             html5QrCode = null;
                         }
                     }
@@ -75,10 +80,23 @@
                     if (page === '#library') {
                     }
                 },
+                "findPass": function (data) {
+                    // find in library
+                    return this.library.findIndex(element => element.text === data);
+                },
+                "deletePass": function (data) {
+                    // find in library
+                    const index = this.findPass(data);
+                    if (index > -1) {
+                        this.library.splice(index, 1);
+                        this.changePage('#library');
+                    }
+                    // go back to scan page
+                },
                 "initPass": function (data, logoId) {
                     let result = dgc.decodeDGC(data);
                     this.pass = result.json;
-                    const text = result.text;
+                    this.text = result.text;
 
                     document.getElementById("qrcode").innerHTML = "";
                     document.getElementById("qrcode-large").innerHTML = "";
@@ -101,7 +119,7 @@
                     });
 
                     dgc.createQR(document.getElementById("qrcode"), {
-                        text: text,
+                        text: this.text,
                         width: 200,
                         height: 200,
                         colorDark: "#000000",
@@ -109,7 +127,7 @@
                     });
 
                     let largeOptions = {
-                        text: text,
+                        text: this.text,
                         width: 300,
                         height: 300,
                         colorDark: "#000000",
@@ -140,6 +158,7 @@
                 "savePass": function (data) {
                     let p = JSON.parse(JSON.stringify(dgc.decodeDGC(data)));
                     p.logo = this.logo;
+                    console.log('saving pass ' + p.text);
                     this.library.push(p);
                     this.showPass(data);
                 },
