@@ -1,14 +1,16 @@
 const path = require('path');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
-
 const webpack = require('webpack');
 
 module.exports = {
-    mode: "development",
     entry: path.resolve(__dirname, './src/app.js'),
+    output: {
+        path: path.resolve(__dirname, './dist'),
+        filename: '[name].[contenthash].js',
+        library: 'dgc',
+    },
     module: {
         rules: [
             {
@@ -27,10 +29,10 @@ module.exports = {
     },
     plugins: [
         new webpack.ProgressPlugin(),
-        new MomentLocalesPlugin(),
         new webpack.ProvidePlugin({
             Buffer: ['buffer', 'Buffer'],
         }),
+        new CleanWebpackPlugin(),
         new CopyPlugin({
             patterns: [
                 {from: "public/js/*.js"},
@@ -42,21 +44,11 @@ module.exports = {
         }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            template: 'index.html',
-            inject: false,
+            template: path.resolve(__dirname, 'src', 'index.html'),
+            inject: true,
         }),
     ],
     resolve: {
         extensions: ['.js'],
-    },
-    output: {
-        path: path.resolve(__dirname, './dist'),
-        filename: 'bundle.js',
-        library: 'dgc',
-    },
-    devServer: {
-        static: {
-            directory: path.join(__dirname, './dist'),
-        },
-    },
+    }
 };
