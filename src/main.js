@@ -57,7 +57,6 @@ Alpine.data('data', function () {
             }
 
             if (page === '#upload') {
-
                 const fileinput = document.getElementById('qr-input-file');
                 const that = this;
                 QR.uploadQR("imageContainer", "qr-input-file", decodedText => {
@@ -74,7 +73,10 @@ Alpine.data('data', function () {
         },
         "findPass": function (data) {
             // find in library
-            return this.library.findIndex(element => element.text === data && element.logo === this.logo);
+            const that = this;
+            return this.library.findIndex(element => {
+                return (element.text === data && element.logo === ('' + that.logo));
+            });
         },
         "deletePass": function (data) {
             // find in library
@@ -150,14 +152,15 @@ Alpine.data('data', function () {
             try {
                 let p = JSON.parse(JSON.stringify(DGC.decodeDGC(data)));
                 p.logo = this.logo;
-                this.library.push(p);
+                if (this.findPass(p.text) === -1) {
+                    this.library.push(p);
+                }
             } catch (e) {
                 console.log(e);
             }
             this.showPass(data);
         },
         "showPass": function (data) {
-            console.log(data);
             window.location.href = URL.toPassUrl(data, this.logo);
         },
         "formatDate": function (date, format) {
@@ -165,10 +168,9 @@ Alpine.data('data', function () {
         },
         "init": function () {
             const url = URL.parse(window.location.href);
-            if (url.query.logo) {
+            if ("logo" in url.query) {
                 this.logo = url.query.logo;
-            } else {
-                this.logo = "";
+                //console.log("Setting logo to : " + this.logo);
             }
             if (url.query.p0) {
                 this.initPass(URL.fromPassUrl(url.query), url.query.logo);
@@ -204,7 +206,6 @@ function getAspectRatio() {
     const realWidth = window.screen.width * window.devicePixelRatio;
     const realHeight = window.screen.height * window.devicePixelRatio;
     const aspectRatio = realHeight / realWidth;
-    console.log(aspectRatio);
     return aspectRatio;
 }
 
