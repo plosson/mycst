@@ -5,11 +5,10 @@ const CopyPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
-    entry: path.resolve(__dirname, './src/app.js'),
+    entry: path.resolve(__dirname, './src/main.js'),
     output: {
         path: path.resolve(__dirname, './dist'),
         filename: '[name].[contenthash].js',
-        library: 'dgc',
     },
     module: {
         rules: [
@@ -35,7 +34,6 @@ module.exports = {
         new CleanWebpackPlugin(),
         new CopyPlugin({
             patterns: [
-                {from: "public/js/*.js"},
                 {from: "public/json/*.json"},
                 {from: "public/img/*.png"},
                 {from: "public/img/*.svg"},
