@@ -32,7 +32,6 @@
                 "library": this.$persist([]),
                 "pass": {
                     "dob": "1975-01-01",
-                    "dob_str": "January 1st 1975",
                     "age": 45,
                     "nam": {
                         "fn": "Denver",
@@ -74,6 +73,8 @@
                             that.savePass(decodedText);
                             document.getElementById("imageContainer").innerHTML = "";
                             fileinput.value = "";
+                        }, error => {
+                            alert("No QR code found. Try again with another picture.");
                         });
                     }
 
@@ -82,7 +83,7 @@
                 },
                 "findPass": function (data) {
                     // find in library
-                    return this.library.findIndex(element => element.text === data);
+                    return this.library.findIndex(element => element.text === data && element.logo === this.logo);
                 },
                 "deletePass": function (data) {
                     // find in library
@@ -155,10 +156,13 @@
                     window.location.href = getPassUrl(this.pass.text, this.logo);
                 },
                 "savePass": function (data) {
-                    let p = JSON.parse(JSON.stringify(dgc.decodeDGC(data)));
-                    p.logo = this.logo;
-                    console.log('saving pass ' + p.text);
-                    this.library.push(p);
+                    try {
+                        let p = JSON.parse(JSON.stringify(dgc.decodeDGC(data)));
+                        p.logo = this.logo;
+                        this.library.push(p);
+                    } catch (e) {
+                        console.log(e);
+                    }
                     this.showPass(data);
                 },
                 "showPass": function (data) {
@@ -172,6 +176,9 @@
                     const url = dgc.parseUrl(window.location.href);
                     if (url.query.logo) {
                         this.logo = url.query.logo;
+                    }
+                    else {
+                        this.logo = "";
                     }
                     if (url.query.p0) {
                         const merged = dgc.mergeQS(url.query, "p");

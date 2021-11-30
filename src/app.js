@@ -99,7 +99,7 @@ function createQR(divElement, options) {
     new QRCode(divElement, options);
 }
 
-function uploadQR(divElement, fileElement, callback) {
+function uploadQR(divElement, fileElement, callback, errorCallback) {
     const imageContainer = document.getElementById(divElement);
     const fileinput = document.getElementById(fileElement);
     fileinput.addEventListener('change', e => {
@@ -107,31 +107,19 @@ function uploadQR(divElement, fileElement, callback) {
             return;
         }
 
+        imageContainer.innerHTML = "";
         const imageFile = e.target.files[0];
-        console.log(imageFile);
         const img = new Image();
         img.src = URL.createObjectURL(imageFile);
         imageContainer.append(img);
 
-        const codeReader = new BrowserQRCodeReader();
-        codeReader.decodeFromImageElement(img).then(r => callback(r.getText()));
-    });
-    /*const html5QrCode = new Html5Qrcode(divElement, {
-        verbose: true,
-        formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE]
-    });
-    const imageContainer = document.getElementById(divElement);
-    const fileinput = document.getElementById(fileElement);
-    fileinput.addEventListener('change', e => {
-        if (e.target.files.length == 0) {
-            return;
+        try {
+            const codeReader = new BrowserQRCodeReader();
+            codeReader.decodeFromImageElement(img).then(r => callback(r.getText()));
+        } catch (e) {
+            errorCallback();
         }
-        const imageFile = e.target.files[0];
-        html5QrCode.scanFile(imageFile, true)
-            .then(decodedText => {
-                callback(decodedText);
-            });
-    });*/
+    });
 }
 
 function scanQR(divElement, aspectRatio, callback) {
@@ -163,7 +151,6 @@ function getAspectRatio() {
     console.log(aspectRatio);
     return aspectRatio;
 }
-
 
 export {splitQS, mergeQS, decode64, encode64, parseUrl, decodeDGC, createQR, uploadQR, scanQR}
 
