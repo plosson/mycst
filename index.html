@@ -41,7 +41,7 @@
         display: none !important;
     }
 </style>
-<script defer src="main.34d4e45a03ffebdd816f.js"></script></head>
+<script defer src="main.86860e4454097817eb1b.js"></script></head>
 
 <body x-data="data" id="body" class="flex flex-col" @hashchange.window="changePage(location.hash)">
 <div x-show="page===''" x-cloak>
@@ -55,16 +55,22 @@
                 No need to use the Covid Safe App. <br/>Just scan or upload your QR code here and
                 it will be stored safely on your phone only.
             </p>
-            <div class="font-montserrat mt-10">
-                <a href="/#scan" class="button bg-black px-6 py-4 rounded-lg border-2 border-black border-solid text-white mr-2 mb-2">
-                    I have a paper version
-                </a>
-                <a href="/#upload" class="button px-6 py-4 border-2 border-black border-solid rounded-lg">
-                    I have a screenshot
-                </a>
+            <div class="font-montserrat mt-10 flex flex-col">
+                <div>
+                    <button x-on:click="window.location.href='/?#scan'"
+                            class="button bg-black px-6 py-4 rounded-lg border-2 border-black border-solid text-white mr-2 mb-2">
+                        I have a paper version
+                    </button>
+                </div>
+                <div>
+                    <button x-on:click="window.location.href='/?#upload'" class="button px-6 py-4 border-2 border-black border-solid rounded-lg">
+                        I have a screenshot
+                    </button>
+                </div>
             </div>
             <p class="font-pt-serif font-normal text-sm mt-7">
-                Nothing leaves your browser. And the code for this app is <a href="https://github.com/plosson/mycst" class="underline">open source</a>
+                Nothing leaves your browser. And the code for this app is <a href="https://github.com/plosson/mycst"
+                                                                             class="underline">open source</a>
             </p>
         </div>
     </section>
