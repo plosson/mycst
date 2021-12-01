@@ -38,14 +38,15 @@ Alpine.data('data', function () {
         "changePage": function (page) {
             this.page = page;
             if (page === '#scan') {
-
-                // check if scanner is started
                 const that = this;
-                if (html5QrCode == null) {
-                    html5QrCode = QR.scanQR("videoContainer", getAspectRatio(), decodedText => {
-                        that.savePass(decodedText);
-                    });
-                }
+                setTimeout(() => {
+                    // check if scanner is started
+                    if (html5QrCode == null) {
+                        html5QrCode = QR.scanQR("videoContainer", getAspectRatio(), decodedText => {
+                            that.savePass(decodedText);
+                        });
+                    }
+                }, 200);
             } else {
                 if (html5QrCode != null) {
                     try {
