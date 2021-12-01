@@ -27,11 +27,11 @@
 
 <body x-data="data" id="body" class="flex flex-col" @hashchange.window="changePage(location.hash)">
 <%= require('html-loader!./pages/home.html').default %>
+<%= require('html-loader!./pages/library.html').default %>
+<%= require('html-loader!./pages/scan.html').default %>
+<%= require('html-loader!./pages/upload.html').default %>
 <%= require('html-loader!./pages/qr/view.html').default %>
 <%= require('html-loader!./pages/qr/detail.html').default %>
 <%= require('html-loader!./pages/qr/encode.html').default %>
-<%= require('html-loader!./pages/library.html').default %>
-<%= require('html-loader!./pages/upload.html').default %>
-
 <%= require('html-loader!./pages/footer.html').default %>
 </body>

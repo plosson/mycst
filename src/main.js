@@ -37,7 +37,7 @@ Alpine.data('data', function () {
         "page": location.hash,
         "changePage": function (page) {
             this.page = page;
-            if (page === '' || page === '#') {
+            if (page === '#scan') {
 
                 // check if scanner is started
                 const that = this;
@@ -218,7 +218,7 @@ Alpine.data('data', function () {
             if (url.query.p0) {
                 this.initPass(URL.fromPassUrl(url.query), url.query.logo);
                 if (this.page === '') {
-                    this.changePage('#qr');
+                    window.location.href = '#qr';
                 }
             }
             this.changePage(location.hash);
