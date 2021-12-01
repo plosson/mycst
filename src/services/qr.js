@@ -23,7 +23,9 @@ const uploadQR = (divElement, fileElement, callback, errorCallback) => {
 
         try {
             const codeReader = new BrowserQRCodeReader();
-            codeReader.decodeFromImageElement(img).then(r => callback(r.getText()));
+            codeReader.decodeFromImageElement(img).then(r => callback(r.getText())).catch(err => {
+                errorCallback(err);
+            });
         } catch (e) {
             errorCallback();
         }

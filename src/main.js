@@ -33,6 +33,8 @@ Alpine.data('data', function () {
             }
         },
         "text": "",
+        "error": false,
+        "found" : false,
         "logo": Alpine.$persist(""),
         "page": location.hash,
         "changePage": function (page) {
@@ -42,8 +44,16 @@ Alpine.data('data', function () {
                 setTimeout(() => {
                     // check if scanner is started
                     if (html5QrCode == null) {
+                        this.error = false;
                         html5QrCode = QR.scanQR("videoContainer", getAspectRatio(), decodedText => {
-                            that.savePass(decodedText);
+                            html5QrCode.pause();
+                            const decoded = DGC.decodeDGC(decodedText);
+                            if (decoded.valid) {
+                                that.savePass(decoded);
+                                this.error = false;
+                            } else {
+                                this.error = true;
+                            }
                         });
                     }
                 }, 200);
@@ -61,12 +71,20 @@ Alpine.data('data', function () {
             if (page === '#upload') {
                 const fileinput = document.getElementById('qr-input-file');
                 const that = this;
+                this.error = false;
                 QR.uploadQR("imageContainer", "qr-input-file", decodedText => {
-                    that.savePass(decodedText);
+                    const decoded = DGC.decodeDGC(decodedText);
+                    if (decoded.valid) {
+                        that.savePass(decoded);
+                    } else {
+                        this.error = true;
+                    }
                     document.getElementById("imageContainer").innerHTML = "";
                     fileinput.value = "";
                 }, error => {
-                    alert("No QR code found. Try again with another picture.");
+                    this.error = true;
+                    document.getElementById("imageContainer").innerHTML = "";
+                    fileinput.value = "";
                 });
             }
 
@@ -192,9 +210,9 @@ Alpine.data('data', function () {
         "encode": function () {
             window.location.href = URL.toPassUrl(this.pass.text, this.logo);
         },
-        "savePass": function (data) {
+        "savePass": function (decoded) {
             try {
-                let p = JSON.parse(JSON.stringify(DGC.decodeDGC(data)));
+                let p = JSON.parse(JSON.stringify(decoded));
                 p.logo = this.logo;
                 if (this.findPass(p.text) === -1) {
                     this.library.push(p);
@@ -202,7 +220,7 @@ Alpine.data('data', function () {
             } catch (e) {
                 console.log(e);
             }
-            this.showPass(data);
+            this.showPass(decoded.text);
         },
         "showPass": function (data) {
             window.location.href = URL.toPassUrl(data, this.logo);

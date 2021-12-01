@@ -1,5 +1,6 @@
 <div id="main" class="p-4 flex flex-col items-center" x-show="page==='#scan'">
     <h1 class="mb-5 border-b-2 border-blue-300">Scan</h1>
-    <h3 class="mb-5">Position your QR code in the frame</h3>
-    <main id="videoContainer"></main>
+    <h3>Position your QR code in the frame</h3>
+    <p class="font-bold" x-show="error" x-cloak>This does not seem to be a valid DGC QR Code.</p>
+    <main id="videoContainer" class="mt-5"></main>
 </div>
