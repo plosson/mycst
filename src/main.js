@@ -15,6 +15,10 @@ import persist from '@alpinejs/persist'
 const bodymovin = require('bodymovin');
 import './style.css';
 
+const STATUS_READY = "ready";
+const STATUS_FOUND = "found";
+const STATUS_ERROR = "error";
+
 let html5QrCode = null;
 Alpine.plugin(persist)
 
@@ -33,8 +37,7 @@ Alpine.data('data', function () {
             }
         },
         "text": "",
-        "error": false,
-        "found" : false,
+        "status": STATUS_READY,
         "logo": Alpine.$persist(""),
         "page": location.hash,
         "changePage": function (page) {
@@ -44,15 +47,16 @@ Alpine.data('data', function () {
                 setTimeout(() => {
                     // check if scanner is started
                     if (html5QrCode == null) {
-                        this.error = false;
+                        this.status = STATUS_READY;
                         html5QrCode = QR.scanQR("videoContainer", getAspectRatio(), decodedText => {
                             html5QrCode.pause();
                             const decoded = DGC.decodeDGC(decodedText);
                             if (decoded.valid) {
+                                this.status = STATUS_FOUND;
                                 that.savePass(decoded);
-                                this.error = false;
                             } else {
-                                this.error = true;
+                                html5QrCode.resume();
+                                this.status = STATUS_ERROR;
                             }
                         });
                     }
@@ -71,20 +75,19 @@ Alpine.data('data', function () {
             if (page === '#upload') {
                 const fileinput = document.getElementById('qr-input-file');
                 const that = this;
-                this.error = false;
+                this.status = STATUS_READY;
                 QR.uploadQR("imageContainer", "qr-input-file", decodedText => {
                     const decoded = DGC.decodeDGC(decodedText);
                     if (decoded.valid) {
+                        this.status = STATUS_FOUND;
                         that.savePass(decoded);
                     } else {
-                        this.error = true;
+                        this.status = STATUS_ERROR;
                     }
                     document.getElementById("imageContainer").innerHTML = "";
                     fileinput.value = "";
                 }, error => {
-                    this.error = true;
-                    document.getElementById("imageContainer").innerHTML = "";
-                    fileinput.value = "";
+                    this.status = STATUS_ERROR;
                 });
             }
 

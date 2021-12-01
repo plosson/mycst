@@ -1,6 +1,7 @@
 <div id="library" x-show="page=='#upload'" class="p-4 flex flex-col h-screen items-center" x-cloak>
     <h1 class="border-b-2 border-blue-300 mb-5">From a photo</h1>
-    <p class="font-bold" x-show="error" x-cloak>This does not seem to be a valid DGC QR Code.</p>
+    <p class="font-bold" x-show="status==='found'" x-cloak>Valid DGC detected, processing it ...</p>
+    <p class="font-bold" x-show="status==='error'" x-cloak>This does not seem to be a valid DGC QR Code.</p>
     <div class="mt-5" id="imageContainer"></div>
     <div class="w-full h-screen">
         <section id="bottom-navigation" class="flex flex-col justify-center items-center">
