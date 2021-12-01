@@ -1,10 +1,12 @@
 <div id="library" x-show="page=='#upload'" class="p-4 flex flex-col h-screen items-center" x-cloak>
-    <h1 class="border-b-2 border-blue-300">Upload</h1>
+    <h1 class="border-b-2 border-blue-300">From a photo</h1>
     <div id="imageContainer"></div>
     <div class="w-full h-screen">
-        <section id="bottom-navigation" class="flex flex-row justify-center">
-            <input type="file" class="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-10 py-2 px-4 rounded"
-                   id="qr-input-file" accept="image/*">
+        <section id="bottom-navigation" class="flex flex-col justify-center items-center">
+            <label class="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-10 py-2 px-4 rounded inline-flex items-center" for="qr-input-file">
+                <span class="material-icons text-white-1 mr-1">upload</span> <span>Select Image</span>
+            </label>
+            <input type="file" id="qr-input-file" accept="image/*" class="hidden">
         </section>
     </div>
 </div>

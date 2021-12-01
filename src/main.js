@@ -21,6 +21,7 @@ Alpine.plugin(persist)
 Alpine.data('data', function () {
     return {
         "library": Alpine.$persist([]),
+        "logos": Alpine.$persist([]),
         "pass": {
             "dob": "1975-01-01",
             "age": 45,
@@ -68,6 +69,43 @@ Alpine.data('data', function () {
                 });
             }
 
+            if (page === '#icon') {
+                const fileinput = document.getElementById('icon-file');
+                const that = this;
+                fileinput.addEventListener('change', e => {
+                    if (e.target.files.length == 0) {
+                        return;
+                    }
+
+                    var file = e.target.files[0];
+                    if (file) {
+                        // Load the image
+                        var reader = new FileReader();
+                        reader.onload = function (readerEvent) {
+                            var image = new Image();
+                            image.onload = function (imageEvent) {
+                                // Resize the image
+                                var canvas = document.createElement('canvas');
+                                canvas.width = 80;
+                                canvas.height = 80;
+                                canvas.getContext('2d').drawImage(image, 0, 0, 80, 80);
+                                var dataUrl = canvas.toDataURL('image/jpeg');
+                                window.location.href = URL.toPassUrl(that.pass.text, dataUrl);
+                                that.changePage('#qr');
+                                /*$.event.trigger({
+                                    type: "imageResized",
+                                    blob: resizedImage,
+                                    url: dataUrl
+                                });*/
+
+                            }
+                            image.src = readerEvent.target.result;
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
             if (page === '#library') {
             }
         },
@@ -111,13 +149,13 @@ Alpine.data('data', function () {
                 path: '/public/json/qr_code.json'
             });
 
-            QR.createQR(document.getElementById("qrcode"), {
+            let smallOptions = {
                 text: this.text,
                 width: 200,
                 height: 200,
                 colorDark: "#000000",
                 colorLight: "#ffffff",
-            });
+            };
 
             let largeOptions = {
                 text: this.text,
@@ -128,12 +166,17 @@ Alpine.data('data', function () {
             };
 
             if (logoId && logoId.length > 0) {
+                smallOptions.logo = `/public/img/qr_logo_${logoId}.png`;
+                smallOptions.logoWidth = 50;
+                smallOptions.logoHeight = 50;
+                smallOptions.logoBackgroundTransparent = false;
+
                 largeOptions.logo = `/public/img/qr_logo_${logoId}.png`;
                 largeOptions.logoWidth = 80;
                 largeOptions.logoHeight = 80;
                 largeOptions.logoBackgroundTransparent = false;
             }
-
+            QR.createQR(document.getElementById("qrcode"), smallOptions);
             QR.createQR(document.getElementById("qrcode-large"), largeOptions);
 
             var canvas = document.querySelector('#qrcode > canvas'),

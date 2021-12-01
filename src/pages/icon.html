@@ -1,0 +1,13 @@
+<div id="library" x-show="page=='#icon'" class="p-4 flex flex-col h-screen items-center" x-cloak>
+    <h1 class="border-b-2 border-blue-300">Upload an Icon</h1>
+    <div id="inputImage"></div>
+    <div id="outputImage"></div>
+    <div class="w-full h-screen">
+        <section id="bottom-navigation" class="flex flex-col justify-center items-center">
+            <label class="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-10 py-2 px-4 rounded inline-flex items-center" for="icon-file">
+                <span class="material-icons text-white-1 mr-1">upload</span> <span>Select Icon</span>
+            </label>
+            <input type="file" id="icon-file" accept="image/*" class="hidden">
+        </section>
+    </div>
+</div>
