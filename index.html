@@ -41,7 +41,7 @@
         display: none !important;
     }
 </style>
-<script defer src="main.4dbb16919faca3842300.js"></script></head>
+<script defer src="main.b80c1ba5beb82a337ed5.js"></script></head>
 
 <body x-data="data" id="body" class="flex flex-col" @hashchange.window="changePage(location.hash)">
 <div id="main" class="p-4 flex flex-col items-center" x-show="page===''">
@@ -151,15 +151,18 @@
 </div>
 
 <div id="library" x-show="page=='#upload'" class="p-4 flex flex-col h-screen items-center" x-cloak>
-    <h1 class="border-b-2 border-blue-300">Upload</h1>
+    <h1 class="border-b-2 border-blue-300">From a photo</h1>
     <div id="imageContainer"></div>
     <div class="w-full h-screen">
-        <section id="bottom-navigation" class="flex flex-row justify-center">
-            <input type="file" class="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-10 py-2 px-4 rounded"
-                   id="qr-input-file" accept="image/*">
+        <section id="bottom-navigation" class="flex flex-col justify-center items-center">
+            <label class="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-10 py-2 px-4 rounded inline-flex items-center" for="qr-input-file">
+                <span class="material-icons text-white-1 mr-1">upload</span> <span>Select Image</span>
+            </label>
+            <input type="file" id="qr-input-file" accept="image/*" class="hidden">
         </section>
     </div>
 </div>
+
 
 <div class="w-full h-screen" x-show="page !== '#details'" x-cloak>
     <!-- <section id="bottom-navigation" class="md:hidden block fixed inset-x-0 bottom-0 z-10 bg-white shadow"> // if shown only tablet/mobile-->
