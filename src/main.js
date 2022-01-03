@@ -146,10 +146,14 @@ Alpine.data('data', function () {
             }
             // go back to scan page
         },
-        "initPass": function (data, logoId) {
+        "initPass": function (data, logoId, dob = null) {
             let result = DGC.decodeDGC(data);
             this.pass = result.json;
             this.text = result.text;
+
+            if (dob != null){
+                this.pass.dob = dob;
+            }
 
             document.getElementById("qrcode").innerHTML = "";
             document.getElementById("qrcode-large").innerHTML = "";
@@ -238,7 +242,7 @@ Alpine.data('data', function () {
                 //console.log("Setting logo to : " + this.logo);
             }
             if (url.query.p0) {
-                this.initPass(URL.fromPassUrl(url.query), url.query.logo);
+                this.initPass(URL.fromPassUrl(url.query), url.query.logo, url.query.dob);
                 if (this.page === '') {
                     window.location.href = '#qr';
                 }
