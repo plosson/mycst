@@ -1,4 +1,5 @@
 const base45 = require('base45');
+const bignumbers = require('bignumber.js');
 const cbor = require('cbor-web');
 const pako = require('pako');
 
